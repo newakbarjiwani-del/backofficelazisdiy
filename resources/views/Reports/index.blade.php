@@ -64,7 +64,7 @@
                                             </th>
                                             <th
                                                 class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                File
+                                                Sumber
                                             </th>
                                             <th
                                                 class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -93,11 +93,20 @@
                                                         {{ $report['title'] }}
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        <a href="{{ $report['file_url'] }}" target="_blank"
-                                                            data-id="{{ $report['id'] }}">
-                                                            <img src="{{ asset('assets/img/doc.svg') }}"
-                                                                alt="PDF Preview" class="w-7 h-7">
-                                                        </a>
+                                                        @if (!empty($report['file_url']))
+                                                            <a href="{{ $report['file_url'] }}" target="_blank"
+                                                                class="inline-flex items-center gap-1 text-orange-600 hover:underline"
+                                                                data-id="{{ $report['id'] }}">
+                                                                @if (($report['source_label'] ?? '') === 'Google Drive')
+                                                                    <span class="text-xs font-semibold">Drive</span>
+                                                                @else
+                                                                    <img src="{{ asset('assets/img/doc.svg') }}"
+                                                                        alt="PDF" class="w-7 h-7">
+                                                                @endif
+                                                            </a>
+                                                        @else
+                                                            <span class="text-xs text-gray-400">-</span>
+                                                        @endif
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                         {{ $report['created_at'] }}
@@ -129,6 +138,8 @@
             const fileNameInput = document.getElementById("file_name");
             const thumbnailInput = document.getElementById("thumbnail");
             const thumbnailPreview = document.getElementById("thumbnailPreview");
+            const driveLinkInput = document.getElementById("drive_link");
+            const driveError = document.getElementById("drive-error");
             const fileInput = document.getElementById("file");
             const errorMessage = document.getElementById("errorMessage");
             const thumbnailError = document.getElementById("thumbnail-error");
@@ -174,30 +185,61 @@
                 return true;
             }
 
-            function validatePdf(file) {
-                if (!file) {
-                    fileError.textContent = "File PDF wajib diunggah.";
-                    fileError.classList.remove("hidden");
+            function isDriveLink(url) {
+                try {
+                    const host = new URL(url).hostname.toLowerCase();
+                    return host.includes("drive.google.com") || host.includes("docs.google.com");
+                } catch (error) {
                     return false;
                 }
-                const sizeMb = file.size / 1024 / 1024;
-                if (sizeMb > maxPdfSize) {
-                    fileError.textContent = `Ukuran PDF tidak boleh lebih dari ${maxPdfSize}MB!`;
-                    fileError.classList.remove("hidden");
+            }
+
+            function validateDriveOrPdf() {
+                const driveLink = driveLinkInput.value.trim();
+                const pdfFile = fileInput.files[0];
+
+                if (pdfFile) {
+                    const sizeMb = pdfFile.size / 1024 / 1024;
+                    if (sizeMb > maxPdfSize) {
+                        fileError.textContent = `Ukuran PDF tidak boleh lebih dari ${maxPdfSize}MB!`;
+                        fileError.classList.remove("hidden");
+                        driveError.classList.add("hidden");
+                        return false;
+                    }
+                    fileError.classList.add("hidden");
+                } else {
+                    fileError.classList.add("hidden");
+                }
+
+                if (driveLink) {
+                    if (!isDriveLink(driveLink)) {
+                        driveError.textContent = "Link harus berupa URL Google Drive yang valid.";
+                        driveError.classList.remove("hidden");
+                        return false;
+                    }
+                    driveError.classList.add("hidden");
+                    return true;
+                }
+
+                if (!pdfFile) {
+                    driveError.textContent = "Isi link Google Drive atau unggah file PDF.";
+                    driveError.classList.remove("hidden");
                     return false;
                 }
-                fileError.classList.add("hidden");
+
+                driveError.classList.add("hidden");
                 return true;
             }
 
             function refreshSubmitState() {
                 const ok = validateTitle() &&
                     validateImage(thumbnailInput.files[0]) &&
-                    validatePdf(fileInput.files[0]);
+                    validateDriveOrPdf();
                 toggleSubmitButton(ok);
             }
 
             fileNameInput.addEventListener("input", refreshSubmitState);
+            driveLinkInput.addEventListener("input", refreshSubmitState);
 
             thumbnailInput.addEventListener("change", function() {
                 const file = this.files[0];
@@ -217,7 +259,7 @@
 
             fileInput.addEventListener("change", function() {
                 const file = this.files[0];
-                if (file && validatePdf(file)) {
+                if (file) {
                     fileNameDisplay.textContent = `File terpilih: ${file.name}`;
                     fileInfoContainer.classList.remove("hidden");
                 } else {
@@ -234,10 +276,9 @@
             });
 
             form.addEventListener("submit", function(event) {
-                if (!validateTitle() || !validateImage(thumbnailInput.files[0]) || !validatePdf(fileInput
-                        .files[0])) {
+                if (!validateTitle() || !validateImage(thumbnailInput.files[0]) || !validateDriveOrPdf()) {
                     event.preventDefault();
-                    alert("Pastikan judul, thumbnail, dan PDF sudah diisi dengan benar.");
+                    alert("Pastikan judul, thumbnail, dan salah satu dari link Drive/PDF sudah diisi.");
                 }
             });
 

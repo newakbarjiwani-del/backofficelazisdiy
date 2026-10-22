@@ -43,13 +43,24 @@
                 </div>
 
                 <div class="mt-4">
+                    <label for="drive_link" class="block text-sm font-medium text-gray-700 mb-2">
+                        Link Google Drive
+                        <span class="italic text-xs">(opsional jika unggah PDF)</span>
+                    </label>
+                    <input type="url" name="drive_link" id="drive_link"
+                        class="mt-1 block w-full py-1.5 px-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border"
+                        placeholder="https://drive.google.com/file/d/...">
+                    <p id="drive-error" class="hidden text-sm text-red-500 mt-1"></p>
+                </div>
+
+                <div class="mt-4">
                     <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
                         File PDF
-                        <span class="italic text-xs">(max 10MB)</span>
+                        <span class="italic text-xs">(opsional jika pakai link Drive, max 10MB)</span>
                     </label>
                     <input type="file" name="file" id="file"
                         class="mt-1 block w-full py-1.5 px-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border"
-                        accept=".pdf" required>
+                        accept=".pdf">
 
                     <div id="fileInfo" class="hidden mt-3 flex items-center text-gray-700">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 mr-2" fill="none"
@@ -64,6 +75,7 @@
                         </button>
                     </div>
                     <p id="file-error" class="hidden text-sm text-red-500 mt-1"></p>
+                    <p class="text-xs text-gray-500 mt-2">Wajib isi salah satu: link Google Drive atau file PDF.</p>
                 </div>
             </div>
 
