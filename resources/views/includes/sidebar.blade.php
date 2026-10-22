@@ -137,6 +137,11 @@
                 <img src="{{ asset('assets/img/document.svg') }}" alt="" class="w-7 mr-2">
                 <li class="font-semibold">Laporan</li>
             </a>
+            <a href="{{ route('fundraiser.index') }}"
+                class="w-full flex items-center px-8 py-2 hover:bg-orange-200 rounded-md transition duration-300 transform hover:scale-105 mb-2 {{ Request::routeIs('fundraiser.index') ? 'ml-5 bg-orange-300 underline underline-offset-2' : '' }}">
+                <img src="{{ asset('assets/img/user.svg') }}" alt="" class="w-7 mr-2">
+                <li class="font-semibold">Fundraiser</li>
+            </a>
         </ul>
     </div>
 
