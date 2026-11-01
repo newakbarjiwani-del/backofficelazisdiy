@@ -70,6 +70,10 @@
                                                 class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Tanggal upload
                                             </th>
+                                            <th
+                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Aksi
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -111,11 +115,23 @@
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                         {{ $report['created_at'] }}
                                                     </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <form action="{{ route('reports.destroy', ['id' => $report['id']]) }}"
+                                                            method="POST"
+                                                            onsubmit="return confirm('Hapus laporan ini?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                class="rounded-md bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
+                                                <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">
                                                     Belum ada laporan. Silakan unggah laporan baru.
                                                 </td>
                                             </tr>

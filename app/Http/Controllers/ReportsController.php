@@ -129,6 +129,21 @@ class ReportsController extends Controller
 
     public function destroy(string $id)
     {
-        //
+        try {
+            $baseUrl = rtrim(env('API_BASE_URL'), '/');
+            $response = Http::delete("{$baseUrl}/delete-report/{$id}");
+
+            if ($response->successful()) {
+                Alert::success('Berhasil', 'Laporan berhasil dihapus!');
+                return redirect()->route('reports.index');
+            }
+
+            $errorMessage = $response->json()['message'] ?? 'Gagal menghapus laporan.';
+            Alert::error('Gagal', $errorMessage);
+            return redirect()->back();
+        } catch (\Exception $e) {
+            Alert::error('Gagal', 'Terjadi kesalahan sistem saat menghapus laporan.');
+            return redirect()->back();
+        }
     }
 }

@@ -94,6 +94,7 @@ Route::middleware('auth.api')->group(function () {
     //reports
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
     Route::post('/upload-reports', [ReportsController::class, 'store'])->name('reports.store');
+    Route::delete('/reports/{id}', [ReportsController::class, 'destroy'])->name('reports.destroy');
 
     // fundraiser tracking
     Route::get('/fundraiser', [FundraiserController::class, 'index'])->name('fundraiser.index');
